@@ -29,7 +29,7 @@ const getNewStatus = (
 
 const useConversation = () => {
   const [conversationStatus, setConversationStatus] =
-    useState<ConversationStatus>(ConversationStatus.ENDED);
+    useState<ConversationStatus>(ConversationStatus.UNINITIALIZED);
   const transcriptRef = useRef<string[]>([]);
 
   const conversation = _useConversation({
@@ -73,7 +73,17 @@ const useConversation = () => {
     );
   }, [startNewConversation, conversation]);
 
+  const mute = useCallback(() => {
+    conversation.setMicMuted(true);
+  }, [conversation]);
+
+  const unmute = useCallback(() => {
+    conversation.setMicMuted(false);
+  }, [conversation]);
+
   return {
+    mute,
+    unmute,
     conversationStatus,
     startNewConversation,
     endConversation,

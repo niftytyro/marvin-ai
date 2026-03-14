@@ -1,4 +1,5 @@
 export enum ConversationStatus {
+  UNINITIALIZED,
   CONNECTED,
   CONNECTING,
   PAUSING,

@@ -10,3 +10,5 @@ import theme, { Theme } from "./theme";
 
 const Box = createBox<Theme>();
 const Text = createText<Theme>();
+
+export { Box, Text };

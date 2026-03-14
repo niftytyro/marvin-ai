@@ -50,6 +50,10 @@ const Marvin: React.FC = () => {
     });
   };
 
+  const endConversation = async () => {
+    await conversation.endSession();
+  };
+
   if (permissionStatus !== "granted") {
     return (
       <View style={styles.container}>

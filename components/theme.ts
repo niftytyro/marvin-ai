@@ -9,8 +9,10 @@ const colors = {
   gray: "#999",
   darkGray: "#4C4C4C",
 
+  black100: "#2C2C2C",
   black: "#0B0B0B",
-  white: "#F0F2F3",
+  white100: "#F0F0F0",
+  white: "#F8F8F8",
 };
 
 const theme = createTheme({
@@ -22,6 +24,12 @@ const theme = createTheme({
     xl: 40,
   },
   textVariants: {
+    hero: {
+      fontWeight: "bold",
+      fontSize: 36,
+      fontFamily: "Libre Baskerville",
+      lineHeight: 48,
+    },
     header: {
       fontWeight: "bold",
       fontSize: 34,

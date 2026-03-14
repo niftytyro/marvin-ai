@@ -49,6 +49,14 @@
         {
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
         }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "node_modules/@expo-google-fonts/libre-baskerville/700Bold/LibreBaskerville_700Bold.ttf"
+          ]
+        }
       ]
     ],
     "experiments": {

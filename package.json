@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@elevenlabs/react-native": "^0.5.11",
+    "@expo-google-fonts/libre-baskerville": "^0.4.3",
     "@expo/vector-icons": "^15.0.3",
     "@livekit/react-native": "^2.9.6",
     "@livekit/react-native-webrtc": "^137.0.2",

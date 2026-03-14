@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable } from "react-native";
+import { Box, Text } from "./foundation";
 
 interface ButtonProps {
   label: string;
@@ -9,19 +10,18 @@ interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({ label, onPress }) => {
   return (
     <Pressable onPress={onPress}>
-      <View
-        style={{
-          height: 48,
-          paddingHorizontal: 16,
-          backgroundColor: "#007AFF",
-          borderRadius: 8,
-          marginTop: 20,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
+      <Box
+        height={48}
+        px="m"
+        backgroundColor="black"
+        borderRadius={8}
+        justifyContent="center"
+        alignItems="center"
       >
-        <Text>{label}</Text>
-      </View>
+        <Text variant="button" color="white">
+          {label}
+        </Text>
+      </Box>
     </Pressable>
   );
 };

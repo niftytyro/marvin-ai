@@ -1,19 +1,11 @@
 import useMicState from "@/hooks/useMic";
-import { AppState, Linking, Pressable, StyleSheet } from "react-native";
+import { AppState, Linking, Pressable } from "react-native";
 import Button from "./Button";
 import { useEffect } from "react";
 import useConversation from "@/hooks/useConversation";
 import { ConversationStatus } from "@/utils/types";
 import { useNetworkState } from "expo-network";
 import { Box, Text } from "./foundation";
-
-const styles = StyleSheet.create({
-  face: {
-    borderRadius: 100,
-    width: 200,
-    height: 200,
-  },
-});
 
 const Marvin: React.FC = () => {
   const { permissionStatus, canAskAgain, requestMicPermission } = useMicState();
@@ -46,7 +38,7 @@ const Marvin: React.FC = () => {
 
   if (permissionStatus !== "granted") {
     return (
-      <Box flex={1}>
+      <Box flex={1} bg="white">
         <Box
           flex={1}
           width="100%"
@@ -54,7 +46,7 @@ const Marvin: React.FC = () => {
           justifyContent="center"
           alignItems="center"
         >
-          <Text>
+          <Text variant="body">
             Microphone permission is required to start the conversation.
           </Text>
 
@@ -71,14 +63,18 @@ const Marvin: React.FC = () => {
         </Box>
 
         {!isInternetReachable && (
-          <Text>Oops! It looks like you have a bad internet connection.</Text>
+          <Text variant="body">
+            Oops! It looks like you have a bad internet connection.
+          </Text>
         )}
       </Box>
     );
   }
 
+  console.log({ conversationStatus });
+
   return (
-    <Box flex={1}>
+    <Box flex={1} bg="white" px="l">
       <Box
         flex={1}
         width="100%"
@@ -88,49 +84,49 @@ const Marvin: React.FC = () => {
       >
         <Pressable onPress={startNewConversation}>
           <Box
-            style={[
-              styles.face,
-              {
-                backgroundColor:
-                  conversationStatus === ConversationStatus.CONNECTED
-                    ? "#d86882"
-                    : "#999",
-                marginBottom: 24,
-              },
-            ]}
+            borderRadius={100}
+            width={200}
+            height={200}
+            backgroundColor={
+              conversationStatus === ConversationStatus.CONNECTED
+                ? "greenDark"
+                : "lightGray"
+            }
+            marginBottom={"l"}
           />
         </Pressable>
 
-        {conversationStatus === ConversationStatus.UNINITIALIZED ? (
-          <Text>
-            {
-              "This is Marvin the Paranoid Android. Say hi... but don't talk to him about life."
-            }
-          </Text>
-        ) : null}
+        <Text variant="bodySmall" color="gray" textAlign="center">
+          {conversationStatus === ConversationStatus.UNINITIALIZED
+            ? "This is Marvin the Paranoid Android.\nSay hi... but don't talk to him about life."
+            : conversationStatus === ConversationStatus.CONNECTING
+            ? "Connecting to servers..."
+            : conversationStatus === ConversationStatus.ENDED
+            ? "Thanks for chatting with Marvin.\nFeel free to speak again!"
+            : null}
+        </Text>
 
         {conversationStatus === ConversationStatus.CONNECTED ? (
-          <>
+          <Box flexDirection="row" justifyContent="center" alignItems="center">
             <Button label="Pause conversation" onPress={pauseConversation} />
+            <Box width={16} />
             <Button label="End conversation" onPress={endConversation} />
-          </>
+          </Box>
         ) : null}
 
         {conversationStatus === ConversationStatus.DISRUPTED ? (
           <>
+            <Text variant="bodySmall" color="gray" textAlign="center" mb="m">
+              Something went wrong! Please check your internet connection and
+              try again
+            </Text>
             <Button label="Resume conversation" onPress={resumeConversation} />
           </>
         ) : null}
       </Box>
 
       {!isInternetReachable && (
-        <Text
-          style={{
-            marginBottom: 24,
-            marginHorizontal: 20,
-            textAlign: "center",
-          }}
-        >
+        <Text variant="body">
           Oops! It looks like you have a bad internet connection.
         </Text>
       )}

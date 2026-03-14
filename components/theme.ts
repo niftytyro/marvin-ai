@@ -1,22 +1,20 @@
 import { createTheme } from "@shopify/restyle";
 
-const palette = {
-  purpleLight: "#8C6FF7",
-  purplePrimary: "#5A31F4",
-  purpleDark: "#3F22AB",
-
+const colors = {
   greenLight: "#56DCBA",
   greenPrimary: "#0ECD9D",
   greenDark: "#0A906E",
+
+  lightGray: "#C4C4C4",
+  gray: "#999",
+  darkGray: "#4C4C4C",
 
   black: "#0B0B0B",
   white: "#F0F2F3",
 };
 
 const theme = createTheme({
-  colors: {
-    backgroundPrimary: palette.white,
-  },
+  colors,
   spacing: {
     s: 8,
     m: 16,
@@ -29,6 +27,14 @@ const theme = createTheme({
       fontSize: 34,
     },
     body: {
+      fontSize: 16,
+      lineHeight: 24,
+    },
+    bodySmall: {
+      fontSize: 14,
+      lineHeight: 20,
+    },
+    button: {
       fontSize: 16,
       lineHeight: 24,
     },

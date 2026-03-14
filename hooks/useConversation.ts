@@ -2,6 +2,7 @@ import { ConversationStatus, ElevenLabsStatus } from "@/utils/types";
 import { useConversation as _useConversation } from "@elevenlabs/react-native";
 import { useCallback, useRef, useState } from "react";
 
+// TODO find a nicer way to do this state management
 const getNewStatus = (
   newStatus: ElevenLabsStatus,
   oldStatus: ConversationStatus
@@ -58,7 +59,9 @@ const useConversation = () => {
 
   const endConversation = useCallback(async () => {
     setConversationStatus(ConversationStatus.ENDING);
-    await conversation.endSession();
+    setTimeout(async () => {
+      await conversation.endSession();
+    });
   }, [conversation]);
 
   const pauseConversation = useCallback(async () => {

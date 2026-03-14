@@ -1,6 +1,8 @@
 import useMicState from "@/hooks/useMic";
 import { useConversation } from "@elevenlabs/react-native";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import Button from "./Button";
+import { useCallback, useEffect, useState } from "react";
 
 const styles = StyleSheet.create({
   container: {
@@ -17,24 +19,40 @@ const styles = StyleSheet.create({
   },
 });
 
+enum ConversationStatus {
+  CONNECTED,
+  DISCONNECTED,
+  CONNECTING,
+}
+
 const Marvin: React.FC = () => {
   const { permissionStatus, canAskAgain, requestMicPermission } = useMicState();
+  const [conversationStatus, setConversationStatus] =
+    useState<ConversationStatus>(ConversationStatus.DISCONNECTED);
 
   const conversation = useConversation({
-    onConnect: () => console.log("Connected to conversation"),
-    onDisconnect: () => console.log("Disconnected from conversation"),
+    onConnect: () => setConversationStatus(ConversationStatus.CONNECTED),
+    // onDisconnect: () => console.log("Disconnected from conversation"),
     onMessage: (message) => console.log("Received message:", message),
-    onError: (error) => console.error("Conversation error:", error),
-    onModeChange: (mode) => console.log("Conversation mode changed:", mode),
-    onStatusChange: (prop) =>
-      console.log("Conversation status changed:", prop.status),
-    onCanSendFeedbackChange: (prop) =>
-      console.log("Can send feedback changed:", prop.canSendFeedback),
-    onUnhandledClientToolCall: (params) =>
-      console.log("Unhandled client tool call:", params),
-    onAudioAlignment: (alignment) =>
-      console.log("Alignment data received:", alignment),
-    onAgentChatResponsePart: (part) => console.log("Chat response part:", part),
+    // onError: (error) => console.error("Conversation error:", error),
+    // onModeChange: (mode) => console.log("Conversation mode changed:", mode),
+    onStatusChange: (prop) => {
+      console.log("Conversation status changed:", prop.status);
+      setConversationStatus(
+        prop.status === "connected"
+          ? ConversationStatus.CONNECTED
+          : prop.status === "connecting"
+          ? ConversationStatus.CONNECTING
+          : ConversationStatus.DISCONNECTED
+      );
+    },
+    // onCanSendFeedbackChange: (prop) =>
+    //   console.log("Can send feedback changed:", prop.canSendFeedback),
+    // onUnhandledClientToolCall: (params) =>
+    //   console.log("Unhandled client tool call:", params),
+    // onAudioAlignment: (alignment) =>
+    //   console.log("Alignment data received:", alignment),
+    // onAgentChatResponsePart: (part) => console.log("Chat response part:", part),
   });
 
   const startConversation = async () => {
@@ -43,9 +61,13 @@ const Marvin: React.FC = () => {
     });
   };
 
-  const endConversation = async () => {
+  const endConversation = useCallback(async () => {
     await conversation.endSession();
-  };
+  }, [conversation]);
+
+  useEffect(() => {
+    console.log("Conversation status:", conversationStatus);
+  }, [conversationStatus]);
 
   if (permissionStatus !== "granted") {
     return (
@@ -54,7 +76,8 @@ const Marvin: React.FC = () => {
           Microphone permission is required to start the conversation.
         </Text>
 
-        <Pressable
+        <Button
+          label="Grant permission"
           onPress={
             canAskAgain
               ? requestMicPermission
@@ -62,21 +85,7 @@ const Marvin: React.FC = () => {
                   Linking.openURL("app-settings:");
                 }
           }
-        >
-          <View
-            style={{
-              height: 48,
-              paddingHorizontal: 16,
-              backgroundColor: "#007AFF",
-              borderRadius: 8,
-              marginTop: 20,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Text>Grant permission</Text>
-          </View>
-        </Pressable>
+        />
       </View>
     );
   }
@@ -89,10 +98,17 @@ const Marvin: React.FC = () => {
             styles.face,
             {
               backgroundColor:
-                conversation.status === "connected" ? "#d86882" : "#999",
+                conversationStatus === ConversationStatus.CONNECTED
+                  ? "#d86882"
+                  : "#999",
+              marginBottom: 24,
             },
           ]}
         />
+
+        {conversationStatus === ConversationStatus.CONNECTED ? (
+          <Button label="End conversation" onPress={endConversation} />
+        ) : null}
       </Pressable>
     </View>
   );

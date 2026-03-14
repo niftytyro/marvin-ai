@@ -105,11 +105,11 @@ const Marvin: React.FC = () => {
             },
           ]}
         />
-
-        {conversationStatus === ConversationStatus.CONNECTED ? (
-          <Button label="End conversation" onPress={endConversation} />
-        ) : null}
       </Pressable>
+
+      {conversationStatus === ConversationStatus.CONNECTED ? (
+        <Button label="End conversation" onPress={endConversation} />
+      ) : null}
     </View>
   );
 };

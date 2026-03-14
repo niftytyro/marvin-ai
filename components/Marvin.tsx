@@ -1,12 +1,6 @@
-import useMic from "@/hooks/useMic";
+import useMicState from "@/hooks/useMic";
 import { useConversation } from "@elevenlabs/react-native";
-import {
-  Pressable,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 
 const styles = StyleSheet.create({
   container: {
@@ -18,14 +12,13 @@ const styles = StyleSheet.create({
   },
   face: {
     borderRadius: 100,
-    backgroundColor: "#ccc",
     width: 200,
     height: 200,
   },
 });
 
 const Marvin: React.FC = () => {
-  const { permissionStatus } = useMic();
+  const { permissionStatus, canAskAgain, requestMicPermission } = useMicState();
 
   const conversation = useConversation({
     onConnect: () => console.log("Connected to conversation"),
@@ -61,7 +54,15 @@ const Marvin: React.FC = () => {
           Microphone permission is required to start the conversation.
         </Text>
 
-        <Pressable>
+        <Pressable
+          onPress={
+            canAskAgain
+              ? requestMicPermission
+              : () => {
+                  Linking.openURL("app-settings:");
+                }
+          }
+        >
           <View
             style={{
               height: 48,
@@ -73,7 +74,7 @@ const Marvin: React.FC = () => {
               alignItems: "center",
             }}
           >
-            <Text>Try again</Text>
+            <Text>Grant permission</Text>
           </View>
         </Pressable>
       </View>
@@ -83,7 +84,15 @@ const Marvin: React.FC = () => {
   return (
     <View style={[styles.container, {}]}>
       <Pressable onPress={startConversation}>
-        <View style={[styles.face]} />
+        <View
+          style={[
+            styles.face,
+            {
+              backgroundColor:
+                conversation.status === "connected" ? "#d86882" : "#999",
+            },
+          ]}
+        />
       </Pressable>
     </View>
   );

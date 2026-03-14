@@ -9,9 +9,14 @@ const useMic = () => {
   const [permissionStatus, setPermissionStatus] = useState<
     PermissionStatus | undefined
   >();
+  const [canAskAgain, setCanAskAgain] = useState<boolean | undefined>(
+    undefined
+  );
 
-  const checkPermissions = useCallback(async () => {
+  const requestMicPermission = useCallback(async () => {
     const { canAskAgain, granted } = await getRecordingPermissionsAsync();
+
+    setCanAskAgain(canAskAgain);
 
     if (granted) {
       setPermissionStatus(PermissionStatus.GRANTED);
@@ -27,10 +32,10 @@ const useMic = () => {
   }, []);
 
   useEffect(() => {
-    checkPermissions();
-  }, [checkPermissions]);
+    requestMicPermission();
+  }, [requestMicPermission]);
 
-  return { permissionStatus };
+  return { permissionStatus, canAskAgain, requestMicPermission };
 };
 
 export default useMic;

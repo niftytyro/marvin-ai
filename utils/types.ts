@@ -1,6 +1,9 @@
 export enum ConversationStatus {
   CONNECTED,
   CONNECTING,
+  PAUSING,
+  PAUSED,
+  ENDING,
   ENDED,
   DISRUPTED,
 }

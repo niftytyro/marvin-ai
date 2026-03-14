@@ -12,10 +12,18 @@ const getNewStatus = (
     case "connecting":
       return ConversationStatus.CONNECTING;
     default:
-      if (oldStatus === ConversationStatus.CONNECTED) {
+      if (
+        oldStatus === ConversationStatus.CONNECTED ||
+        oldStatus === ConversationStatus.CONNECTING
+      ) {
         return ConversationStatus.DISRUPTED;
       }
-      return ConversationStatus.ENDED;
+      if (oldStatus === ConversationStatus.PAUSING) {
+        return ConversationStatus.PAUSED;
+      } else if (oldStatus === ConversationStatus.ENDING) {
+        return ConversationStatus.ENDED;
+      }
+      return oldStatus;
   }
 };
 
@@ -25,22 +33,15 @@ const useConversation = () => {
   const transcriptRef = useRef<string[]>([]);
 
   const conversation = _useConversation({
-    onConnect: () => setConversationStatus(ConversationStatus.CONNECTED),
-    // onDisconnect: () => console.log("Disconnected from conversation"),
+    onConnect: () =>
+      setConversationStatus(getNewStatus("connected", conversationStatus)),
+    onDisconnect: () =>
+      setConversationStatus(getNewStatus("disconnected", conversationStatus)),
     onMessage: ({ message, role }) => {
       transcriptRef.current.push(`${role}: ${message}`);
     },
-    // onError: (error) => console.error("Conversation error:", error),
-    // onModeChange: (mode) => console.log("Conversation mode changed:", mode),
     onStatusChange: (prop) =>
       setConversationStatus(getNewStatus(prop.status, conversationStatus)),
-    // onCanSendFeedbackChange: (prop) =>
-    //   console.log("Can send feedback changed:", prop.canSendFeedback),
-    // onUnhandledClientToolCall: (params) =>
-    //   console.log("Unhandled client tool call:", params),
-    // onAudioAlignment: (alignment) =>
-    //   console.log("Alignment data received:", alignment),
-    // onAgentChatResponsePart: (part) => console.log("Chat response part:", part),
   });
 
   const startNewConversation = useCallback(async () => {
@@ -56,13 +57,14 @@ const useConversation = () => {
   }, [conversation]);
 
   const endConversation = useCallback(async () => {
+    setConversationStatus(ConversationStatus.ENDING);
     await conversation.endSession();
-    setConversationStatus(ConversationStatus.ENDED);
   }, [conversation]);
 
   const pauseConversation = useCallback(async () => {
-    await endConversation();
-  }, [endConversation]);
+    setConversationStatus(ConversationStatus.PAUSING);
+    await conversation.endSession();
+  }, [conversation]);
 
   const resumeConversation = useCallback(async () => {
     await startNewConversation();

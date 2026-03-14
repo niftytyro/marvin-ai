@@ -1,15 +1,11 @@
-import { Text, View } from "react-native";
+import { ElevenLabsProvider } from "@elevenlabs/react-native";
+import Marvin from "@/components/Marvin";
+import { Stack } from "expo-router";
 
 export default function Index() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Hello, Milo!</Text>
-    </View>
+    <ElevenLabsProvider>
+      <Marvin />
+    </ElevenLabsProvider>
   );
 }

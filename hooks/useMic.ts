@@ -3,7 +3,18 @@ import {
   getRecordingPermissionsAsync,
   PermissionStatus,
   requestRecordingPermissionsAsync,
+  setAudioModeAsync,
 } from "expo-audio";
+
+const setAudioMode = async () => {
+  // Configure audio for background playback with mixing
+  await setAudioModeAsync({
+    playsInSilentMode: true,
+    shouldPlayInBackground: true,
+    interruptionMode: "duckOthers",
+    allowsRecording: true,
+  });
+};
 
 const useMic = () => {
   const [permissionStatus, setPermissionStatus] = useState<
@@ -34,6 +45,10 @@ const useMic = () => {
   useEffect(() => {
     requestMicPermission();
   }, [requestMicPermission]);
+
+  useEffect(() => {
+    setAudioMode();
+  }, []);
 
   return { permissionStatus, canAskAgain, requestMicPermission };
 };

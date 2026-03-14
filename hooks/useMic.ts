@@ -48,6 +48,9 @@ const useMic = () => {
 
   useEffect(() => {
     setAudioMode();
+    console.log(
+      "We set the audio mode for background playback and mixing with other apps."
+    );
   }, []);
 
   return { permissionStatus, canAskAgain, requestMicPermission };

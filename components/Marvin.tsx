@@ -1,8 +1,16 @@
 import useMicState from "@/hooks/useMic";
-import { useConversation } from "@elevenlabs/react-native";
-import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  AppState,
+  Linking,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import Button from "./Button";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
+import useConversation from "@/hooks/useConversation";
+import { ConversationStatus } from "@/utils/types";
 
 const styles = StyleSheet.create({
   container: {
@@ -19,55 +27,31 @@ const styles = StyleSheet.create({
   },
 });
 
-enum ConversationStatus {
-  CONNECTED,
-  DISCONNECTED,
-  CONNECTING,
-}
-
 const Marvin: React.FC = () => {
   const { permissionStatus, canAskAgain, requestMicPermission } = useMicState();
-  const [conversationStatus, setConversationStatus] =
-    useState<ConversationStatus>(ConversationStatus.DISCONNECTED);
-
-  const conversation = useConversation({
-    onConnect: () => setConversationStatus(ConversationStatus.CONNECTED),
-    // onDisconnect: () => console.log("Disconnected from conversation"),
-    onMessage: (message) => console.log("Received message:", message),
-    // onError: (error) => console.error("Conversation error:", error),
-    // onModeChange: (mode) => console.log("Conversation mode changed:", mode),
-    onStatusChange: (prop) => {
-      console.log("Conversation status changed:", prop.status);
-      setConversationStatus(
-        prop.status === "connected"
-          ? ConversationStatus.CONNECTED
-          : prop.status === "connecting"
-          ? ConversationStatus.CONNECTING
-          : ConversationStatus.DISCONNECTED
-      );
-    },
-    // onCanSendFeedbackChange: (prop) =>
-    //   console.log("Can send feedback changed:", prop.canSendFeedback),
-    // onUnhandledClientToolCall: (params) =>
-    //   console.log("Unhandled client tool call:", params),
-    // onAudioAlignment: (alignment) =>
-    //   console.log("Alignment data received:", alignment),
-    // onAgentChatResponsePart: (part) => console.log("Chat response part:", part),
-  });
-
-  const startConversation = async () => {
-    await conversation.startSession({
-      agentId: "agent_9501kkn62xxge6jac724nnwgp7sv",
-    });
-  };
-
-  const endConversation = useCallback(async () => {
-    await conversation.endSession();
-  }, [conversation]);
+  const {
+    conversationStatus,
+    endConversation,
+    pauseConversation,
+    resumeConversation,
+    startNewConversation,
+  } = useConversation();
 
   useEffect(() => {
-    console.log("Conversation status:", conversationStatus);
-  }, [conversationStatus]);
+    AppState.addEventListener("change", (state) => {
+      if (
+        state === "background" &&
+        conversationStatus === ConversationStatus.CONNECTED
+      ) {
+        pauseConversation();
+      } else if (
+        state === "active" &&
+        conversationStatus === ConversationStatus.DISRUPTED
+      ) {
+        resumeConversation();
+      }
+    });
+  }, [conversationStatus, pauseConversation, resumeConversation]);
 
   if (permissionStatus !== "granted") {
     return (
@@ -92,7 +76,7 @@ const Marvin: React.FC = () => {
 
   return (
     <View style={[styles.container, {}]}>
-      <Pressable onPress={startConversation}>
+      <Pressable onPress={startNewConversation}>
         <View
           style={[
             styles.face,
@@ -108,7 +92,16 @@ const Marvin: React.FC = () => {
       </Pressable>
 
       {conversationStatus === ConversationStatus.CONNECTED ? (
-        <Button label="End conversation" onPress={endConversation} />
+        <>
+          <Button label="Pause conversation" onPress={pauseConversation} />
+          <Button label="End conversation" onPress={endConversation} />
+        </>
+      ) : null}
+
+      {conversationStatus === ConversationStatus.DISRUPTED ? (
+        <>
+          <Button label="Resume conversation" onPress={resumeConversation} />
+        </>
       ) : null}
     </View>
   );

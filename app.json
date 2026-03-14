@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "milo",
-    "slug": "milo",
+    "name": "marvin",
+    "slug": "marvin",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "milo",
+    "scheme": "marvin",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.udasi.milo"
+      "bundleIdentifier": "com.udasi.marvin"
     },
     "android": {
       "adaptiveIcon": {

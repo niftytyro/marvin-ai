@@ -1,12 +1,5 @@
-import {
-  ThemeProvider,
-  createBox,
-  createText,
-  createRestyleComponent,
-  createVariant,
-  VariantProps,
-} from "@shopify/restyle";
-import theme, { Theme } from "./theme";
+import { createBox, createText } from "@shopify/restyle";
+import { Theme } from "./theme";
 
 const Box = createBox<Theme>();
 const Text = createText<Theme>();

@@ -29,7 +29,7 @@ const Splash = () => {
     opacityTweener.value = withDelay(
       500,
       withTiming(1, {
-        duration: 1000,
+        duration: 800,
         easing: Easing.bezierFn(0.82, 0.11, 0.53, 0.96),
       })
     );
@@ -37,13 +37,13 @@ const Splash = () => {
     positionTweener.value = withDelay(
       500,
       withTiming(1, {
-        duration: 1000,
+        duration: 800,
       })
     );
 
     const timer = setTimeout(() => {
       router.replace("/conversation");
-    }, 2000);
+    }, 1800);
 
     return () => clearTimeout(timer);
   }, [positionTweener, opacityTweener]);

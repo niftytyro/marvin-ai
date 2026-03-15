@@ -1,12 +1,11 @@
 import useMicState from "@/hooks/useMic";
 import { AppState, Linking, Pressable } from "react-native";
-import Button, { ButtonProps } from "./Button";
+import { ButtonProps } from "./Button";
 import { useEffect } from "react";
 import useConversation from "@/hooks/useConversation";
 import { ConversationStatus } from "@/utils/types";
 import { useNetworkState } from "expo-network";
 import { Box, SafeBottomSpace, SafeTopSpace, Text } from "./foundation";
-import Banner from "./Banner";
 import Face from "./Face";
 import Footer, { FooterProps } from "./Footer";
 
@@ -39,46 +38,27 @@ const Marvin: React.FC = () => {
     });
   }, [conversationStatus, pauseConversation, resumeConversation]);
 
-  if (permissionStatus !== "granted") {
-    return (
-      <Box flex={1} bg="white">
-        <Box
-          flex={1}
-          width="100%"
-          height="100%"
-          justifyContent="center"
-          alignItems="center"
-        >
-          <Text variant="body">
-            Microphone permission is required to start the conversation.
-          </Text>
-
-          <Button
-            label="Grant permission"
-            onPress={
-              canAskAgain
-                ? requestMicPermission
-                : () => {
-                    Linking.openURL("app-settings:");
-                  }
-            }
-          />
-        </Box>
-
-        {!isInternetReachable && (
-          <Text variant="body">
-            Oops! It looks like you have a bad internet connection.
-          </Text>
-        )}
-      </Box>
-    );
-  }
-
-  const getPrimaryCta: () => ButtonProps | undefined = () => {
+  useEffect(() => {
+    let timeout: number | undefined;
     if (
-      conversationStatus === ConversationStatus.ENDED ||
+      isInternetReachable &&
+      permissionStatus === "granted" &&
       conversationStatus === ConversationStatus.UNINITIALIZED
     ) {
+      timeout = setTimeout(() => {
+        startNewConversation();
+      }, 4600);
+    }
+    return () => clearTimeout(timeout);
+  }, [
+    isInternetReachable,
+    conversationStatus,
+    permissionStatus,
+    startNewConversation,
+  ]);
+
+  const getPrimaryCta: () => ButtonProps | undefined = () => {
+    if (conversationStatus === ConversationStatus.ENDED) {
       return {
         label: "Start new chat",
         state: "enabled",
@@ -89,7 +69,7 @@ const Marvin: React.FC = () => {
       conversationStatus === ConversationStatus.DISRUPTED
     ) {
       return {
-        label: "Resume chat",
+        label: "Reconnect",
         onPress: resumeConversation,
       };
     } else if (
@@ -116,8 +96,7 @@ const Marvin: React.FC = () => {
       conversationStatus === ConversationStatus.CONNECTING ||
       conversationStatus === ConversationStatus.PAUSING ||
       conversationStatus === ConversationStatus.PAUSED ||
-      conversationStatus === ConversationStatus.ENDING ||
-      conversationStatus === ConversationStatus.DISRUPTED
+      conversationStatus === ConversationStatus.ENDING
     ) {
       return {
         label: "End chat",
@@ -133,27 +112,66 @@ const Marvin: React.FC = () => {
     }
   };
 
-  const getMessage = () => {
+  const getMessage: () => FooterProps["message"] = () => {
+    if (!isInternetReachable) {
+      return {
+        text: "Oops! Looks like you're offline. Please check your internet connection.",
+        variant: "critical",
+      };
+    }
     if (conversationStatus === ConversationStatus.CONNECTING) {
-      return "Firing up it's diodes...";
+      return { text: "Firing up it's diodes..." };
     } else if (conversationStatus === ConversationStatus.ENDED) {
-      return "Thanks for chatting!";
+      return { text: "Thanks for chatting!" };
     } else if (conversationStatus === ConversationStatus.DISRUPTED) {
-      return "Something went wrong! Please check your internet connection and try again.";
+      return {
+        text: "Something went wrong! Please check your internet connection and try again.",
+        variant: "critical",
+      };
     }
   };
 
-  // {!isInternetReachable && (
-  //   <Text variant="body">
-  //     Oops! It looks like you have a bad internet connection.
-  //   </Text>
-  // )}
+  if (permissionStatus !== "granted") {
+    return (
+      <>
+        <SafeTopSpace />
+        <Box
+          flex={1}
+          width={"100%"}
+          height={"100%"}
+          bg="white"
+          justifyContent="center"
+          alignItems="stretch"
+          px="l"
+        >
+          <Box flex={1}>
+            <Text variant="body">
+              Microphone permission is required to start the conversation.
+            </Text>
+          </Box>
+
+          <Footer
+            primaryCta={{
+              label: "Grant permission",
+              onPress: canAskAgain
+                ? requestMicPermission
+                : () => {
+                    Linking.openURL("app-settings:");
+                  },
+            }}
+          />
+        </Box>
+
+        <SafeBottomSpace />
+      </>
+    );
+  }
 
   return (
-    <Box flex={1} bg="white" px="l">
+    <Box flex={1} width="100%" height="100%" bg="white" px="l">
       <SafeTopSpace />
-      <Box flex={1}>
-        <Box flex={1} justifyContent="center" alignItems="center">
+      <Box flex={1} width={"100%"} height="100%">
+        <Box flex={1} justifyContent="center" alignItems="center" pb="xl">
           <Pressable onPress={startNewConversation}>
             <Face status={conversationStatus} />
           </Pressable>

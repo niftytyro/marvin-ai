@@ -8,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const audioSource = require("@/assets/sounds/toggle.wav");
 
-// TODO find a nicer way to do this state management
+// TODO find a nicer way to do this state management - probably xstate
 const getNewStatus = (
   newStatus: ElevenLabsStatus,
   oldStatus: ConversationStatus
@@ -75,8 +75,7 @@ const useConversation = () => {
     ) {
       try {
         await conversation.startSession({
-          // agentId: "agent_9501kkn62xxge6jac724nnwgp7sv",
-          agentId: "agent_6801kknhh1zkf4xs2h5e08hwqgrd",
+          agentId: "agent_3701kkrs7gmqf19r95z10x7efksx",
         });
       } catch {
         setConversationStatus(ConversationStatus.DISRUPTED);
@@ -94,7 +93,10 @@ const useConversation = () => {
 
   const pauseConversation = useCallback(async () => {
     setConversationStatus(ConversationStatus.PAUSING);
-    await conversation.endSession();
+    // TODO solve for sync updates
+    setTimeout(async () => {
+      await conversation.endSession();
+    });
   }, [conversation]);
 
   const resumeConversation = useCallback(async () => {

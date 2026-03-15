@@ -58,6 +58,16 @@ const Marvin: React.FC = () => {
   ]);
 
   const getPrimaryCta: () => ButtonProps | undefined = () => {
+    if (permissionStatus !== "granted") {
+      return {
+        label: "Grant permission",
+        onPress: canAskAgain
+          ? requestMicPermission
+          : () => {
+              Linking.openURL("app-settings:");
+            },
+      };
+    }
     if (conversationStatus === ConversationStatus.ENDED) {
       return {
         label: "Start new chat",
@@ -91,6 +101,9 @@ const Marvin: React.FC = () => {
   };
 
   const getSecondaryCta: () => ButtonProps | undefined = () => {
+    if (permissionStatus !== "granted") {
+      return undefined;
+    }
     if (
       conversationStatus === ConversationStatus.CONNECTED ||
       conversationStatus === ConversationStatus.CONNECTING ||
@@ -113,6 +126,12 @@ const Marvin: React.FC = () => {
   };
 
   const getMessage: () => FooterProps["message"] = () => {
+    if (permissionStatus !== "granted") {
+      return {
+        text: "Marvin needs permission to microphone in order to hear you :)",
+        variant: "critical",
+      };
+    }
     if (!isInternetReachable) {
       return {
         text: "Oops! Looks like you're offline. Please check your internet connection.",
@@ -130,42 +149,6 @@ const Marvin: React.FC = () => {
       };
     }
   };
-
-  if (permissionStatus !== "granted") {
-    return (
-      <>
-        <SafeTopSpace />
-        <Box
-          flex={1}
-          width={"100%"}
-          height={"100%"}
-          bg="white"
-          justifyContent="center"
-          alignItems="stretch"
-          px="l"
-        >
-          <Box flex={1}>
-            <Text variant="body">
-              Microphone permission is required to start the conversation.
-            </Text>
-          </Box>
-
-          <Footer
-            primaryCta={{
-              label: "Grant permission",
-              onPress: canAskAgain
-                ? requestMicPermission
-                : () => {
-                    Linking.openURL("app-settings:");
-                  },
-            }}
-          />
-        </Box>
-
-        <SafeBottomSpace />
-      </>
-    );
-  }
 
   return (
     <Box flex={1} width="100%" height="100%" bg="white" px="l">

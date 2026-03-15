@@ -7,8 +7,8 @@ This is Marvin, from Hitchhiker's Guide to the Galaxy. It's an AI bot built with
 - [x] Create an agent for Marvin using ElevenLabs.
 - [x] Integrate ElevenLabs agent.
 - [ ] Handle edge cases
-  - [ ] Permissions
   - [ ] Prolonged silence
+  - [x] Permissions
   - [x] No internet
   - [x] Disruptions
   - [x] App backgrounded - by user, due to phone call, phone locked etc.
@@ -17,6 +17,7 @@ This is Marvin, from Hitchhiker's Guide to the Galaxy. It's an AI bot built with
 - [ ] Sound effect for disruptions
 - [x] Avatar
 - [ ] Handle soft diruptions - e.g. user backgrounds app manually, should not pause the conversation
+- [ ] Model polish
 
 ## Potential Improvements
 

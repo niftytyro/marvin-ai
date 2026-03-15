@@ -49,6 +49,7 @@ const theme = createTheme({
     button: {
       fontSize: 16,
       lineHeight: 24,
+      fontWeight: 600,
     },
     defaults: {
       // We can define a default text variant here.

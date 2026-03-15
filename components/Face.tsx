@@ -47,7 +47,7 @@ const Face: React.FC<FaceProps> = ({ status }) => {
     backgroundColor:
       status === ConversationStatus.CONNECTED
         ? undefined
-        : "rgba(0, 0, 0, 0.2)",
+        : "rgba(0, 0, 0, 0.1)",
     height: 173,
     width: 173,
     position: "absolute",
@@ -76,7 +76,7 @@ const Face: React.FC<FaceProps> = ({ status }) => {
       {status !== ConversationStatus.CONNECTED ? (
         <Animated.View
           key="overlay"
-          entering={FadeIn.duration(100).delay(200).easing(Easing.linear)}
+          entering={FadeIn.duration(100).delay(200)}
           exiting={FadeOut.duration(200)}
           style={overlayStyle}
         />

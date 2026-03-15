@@ -41,10 +41,11 @@ const ButtonGroup: React.FC<ButtonGroupProps> = ({
       }}
       gap="s"
       flexDirection="row"
+      width={"100%"}
     >
       {primaryCta && (
         <Animated.View
-          key={`primary-cta-${primaryCta.label}`}
+          key={`primary-cta`}
           style={buttonStyle}
           layout={LinearTransition}
         >
@@ -54,7 +55,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = ({
 
       {secondaryCta && (
         <Animated.View
-          key={`secondary-cta-${secondaryCta.label}`}
+          key={`secondary-cta`}
           style={buttonStyle}
           layout={LinearTransition}
         >

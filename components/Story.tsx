@@ -79,6 +79,7 @@ const Story: React.FC<StoryProps> = ({ children }) => {
     justifyContent: "center",
     alignItems: "center",
     zIndex: 2,
+    pointerEvents: "none",
   }));
 
   const introStyle = useAnimatedStyle(() => ({
@@ -101,6 +102,7 @@ const Story: React.FC<StoryProps> = ({ children }) => {
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1,
+    pointerEvents: "none",
   }));
 
   const contentStyle = useAnimatedStyle(() => ({

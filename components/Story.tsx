@@ -18,40 +18,42 @@ const Story: React.FC<StoryProps> = ({ children }) => {
   const tweener = useSharedValue(0);
 
   useEffect(() => {
+    const easing = Easing.bezierFn(0.5, 0.0, 0.56, 0.94);
+
     tweener.value = withSequence(
       withDelay(
         500,
         withTiming(1, {
           duration: 800,
-          easing: Easing.bezierFn(0.82, 0.11, 0.53, 0.96),
+          easing,
         })
       ),
       withDelay(
         1200,
         withTiming(2, {
           duration: 800,
-          easing: Easing.bezierFn(0.82, 0.11, 0.53, 0.96),
+          easing,
         })
       ),
       withDelay(
         200,
         withTiming(3, {
           duration: 800,
-          easing: Easing.bezierFn(0.82, 0.11, 0.53, 0.96),
+          easing,
         })
       ),
       withDelay(
         2500,
         withTiming(4, {
           duration: 800,
-          easing: Easing.bezierFn(0.82, 0.11, 0.53, 0.96),
+          easing,
         })
       ),
       withDelay(
         200,
         withTiming(5, {
           duration: 800,
-          easing: Easing.bezierFn(0.82, 0.11, 0.53, 0.96),
+          easing,
         })
       )
     );

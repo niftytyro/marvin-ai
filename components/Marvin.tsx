@@ -1,7 +1,7 @@
 import useMicState from "@/hooks/useMic";
 import { AppState, Linking, Pressable } from "react-native";
 import { ButtonProps } from "./Button";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import useConversation from "@/hooks/useConversation";
 import { ConversationStatus } from "@/utils/types";
 import { useNetworkState } from "expo-network";
@@ -9,6 +9,10 @@ import { Box, SafeBottomSpace, SafeTopSpace, Text } from "./foundation";
 import Face from "./Face";
 import Footer, { FooterProps } from "./Footer";
 import { useAudioPlayer } from "expo-audio";
+import {
+  addInterruptionBeganListener,
+  addInterruptionEndedListener,
+} from "@/modules/audio-interruption/src/AudioInterruptionModule";
 
 const audioSource = require("@/assets/sounds/toggle.wav");
 
@@ -25,21 +29,35 @@ const Marvin: React.FC = () => {
   } = useConversation();
   const { isInternetReachable } = useNetworkState();
   const player = useAudioPlayer(audioSource);
+  const isAudioInterrupted = useRef(false);
 
   useEffect(() => {
     AppState.addEventListener("change", (state) => {
+      console.log({
+        state,
+        conversationStatus,
+        isAudioInterrupted: isAudioInterrupted.current,
+      });
       if (
-        state === "background" &&
-        conversationStatus === ConversationStatus.CONNECTED
-      ) {
-        pauseConversation();
-      } else if (
         state === "active" &&
-        conversationStatus === ConversationStatus.DISRUPTED
+        conversationStatus === ConversationStatus.PAUSED &&
+        !isAudioInterrupted.current
       ) {
         resumeConversation();
       }
     });
+    const beganSub = addInterruptionBeganListener(() => {
+      pauseConversation();
+      isAudioInterrupted.current = true;
+    });
+    const endedSub = addInterruptionEndedListener(
+      () => (isAudioInterrupted.current = true)
+    );
+
+    return () => {
+      beganSub.remove();
+      endedSub.remove();
+    };
   }, [conversationStatus, pauseConversation, resumeConversation]);
 
   useEffect(() => {

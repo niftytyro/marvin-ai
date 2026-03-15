@@ -1,6 +1,9 @@
 import { ConversationStatus, ElevenLabsStatus } from "@/utils/types";
-import { useConversation as _useConversation } from "@elevenlabs/react-native";
-import { useCallback, useRef, useState } from "react";
+import {
+  useConversation as _useConversation,
+  Role,
+} from "@elevenlabs/react-native";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // TODO find a nicer way to do this state management
 const getNewStatus = (
@@ -32,15 +35,28 @@ const useConversation = () => {
   const [conversationStatus, setConversationStatus] =
     useState<ConversationStatus>(ConversationStatus.UNINITIALIZED);
   const transcriptRef = useRef<string[]>([]);
+  const [emptyReplyCounter, setEmptyReplyCounter] = useState(0);
+
+  const onMessage = useCallback(
+    ({ message, role }: { message: string; role: Role }) => {
+      transcriptRef.current.push(`${role}: ${message}`);
+      if (role === "user") {
+        if (message === "...") {
+          setEmptyReplyCounter((c) => c + 1);
+        } else if (emptyReplyCounter > 0) {
+          setEmptyReplyCounter(0);
+        }
+      }
+    },
+    [emptyReplyCounter]
+  );
 
   const conversation = _useConversation({
     onConnect: () =>
       setConversationStatus(getNewStatus("connected", conversationStatus)),
     onDisconnect: () =>
       setConversationStatus(getNewStatus("disconnected", conversationStatus)),
-    onMessage: ({ message, role }) => {
-      transcriptRef.current.push(`${role}: ${message}`);
-    },
+    onMessage,
     onStatusChange: (prop) =>
       setConversationStatus(getNewStatus(prop.status, conversationStatus)),
   });
@@ -50,15 +66,20 @@ const useConversation = () => {
       conversation.status === "disconnected" ||
       conversation.status === "disconnecting"
     ) {
-      await conversation.startSession({
-        // agentId: "agent_9501kkn62xxge6jac724nnwgp7sv",
-        agentId: "agent_6801kknhh1zkf4xs2h5e08hwqgrd",
-      });
+      try {
+        await conversation.startSession({
+          // agentId: "agent_9501kkn62xxge6jac724nnwgp7sv",
+          agentId: "agent_6801kknhh1zkf4xs2h5e08hwqgrd",
+        });
+      } catch {
+        setConversationStatus(ConversationStatus.DISRUPTED);
+      }
     }
   }, [conversation]);
 
   const endConversation = useCallback(async () => {
     setConversationStatus(ConversationStatus.ENDING);
+    // TODO solve for sync updates
     setTimeout(async () => {
       await conversation.endSession();
     });
@@ -83,6 +104,12 @@ const useConversation = () => {
   const unmute = useCallback(() => {
     conversation.setMicMuted(false);
   }, [conversation]);
+
+  useEffect(() => {
+    if (emptyReplyCounter >= 2) {
+      endConversation();
+    }
+  }, [endConversation, emptyReplyCounter]);
 
   return {
     mute,

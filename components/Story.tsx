@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, Text } from "./foundation";
+import { Box, SafeTopSpace, Text } from "./foundation";
 import Animated, {
   Easing,
   interpolate,
@@ -115,10 +115,14 @@ const Story: React.FC<StoryProps> = ({ children }) => {
       },
     ],
     flex: 1,
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   }));
 
   return (
-    <Box position="relative" flex={1}>
+    <Box position="relative" flex={1} bg="white">
       <Animated.View style={splashStyle}>
         <Text variant="hero" color="black100" fontFamily="Libre Baskerville">
           {"Don't\nPanic"}

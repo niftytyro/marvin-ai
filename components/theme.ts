@@ -1,4 +1,5 @@
 import { createTheme } from "@shopify/restyle";
+import { Platform } from "react-native";
 
 const colors = {
   greenLight: "#56DCBA",
@@ -29,9 +30,8 @@ const theme = createTheme({
   },
   textVariants: {
     hero: {
-      fontWeight: "bold",
+      fontWeight: 700,
       fontSize: 36,
-      fontFamily: "Libre Baskerville",
       lineHeight: 48,
     },
     header: {

@@ -126,18 +126,13 @@ const Story: React.FC<StoryProps> = ({ children }) => {
   return (
     <Box position="relative" flex={1} bg="white">
       <Animated.View style={splashStyle}>
-        <Text variant="hero" color="black100" fontFamily="Libre Baskerville">
+        <Text variant="hero" color="black100">
           {"Don't\nPanic"}
         </Text>
       </Animated.View>
 
       <Animated.View style={introStyle}>
-        <Text
-          variant="body"
-          color="black100"
-          fontFamily="Libre Baskerville"
-          textAlign="center"
-        >
+        <Text variant="body" color="black100" textAlign="center">
           {
             "This is Marvin - the Paranoid Android.\nWhatever you do... don't talk to him about life."
           }

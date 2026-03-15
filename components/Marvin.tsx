@@ -22,6 +22,7 @@ const Marvin: React.FC = () => {
     requestMicPermission,
   } = useMic();
   const {
+    agentMode,
     conversationStatus,
     endConversation,
     pauseConversation,
@@ -85,31 +86,6 @@ const Marvin: React.FC = () => {
     startNewConversation,
   ]);
 
-  const secondaryCta: ButtonProps | undefined = useMemo(() => {
-    if (permissionStatus !== "granted") {
-      return undefined;
-    }
-    if (
-      conversationStatus === ConversationStatus.CONNECTED ||
-      conversationStatus === ConversationStatus.CONNECTING ||
-      conversationStatus === ConversationStatus.PAUSING ||
-      conversationStatus === ConversationStatus.PAUSED ||
-      conversationStatus === ConversationStatus.ENDING
-    ) {
-      return {
-        label: "End chat",
-        onPress: endConversation,
-        state:
-          conversationStatus === ConversationStatus.PAUSING
-            ? "disabled"
-            : conversationStatus === ConversationStatus.ENDING
-            ? "loading"
-            : "enabled",
-        variant: "critical",
-      };
-    }
-  }, [conversationStatus, endConversation, permissionStatus]);
-
   const footerMessage: FooterProps["message"] = useMemo(() => {
     if (permissionStatus !== "granted") {
       return {
@@ -124,12 +100,12 @@ const Marvin: React.FC = () => {
       };
     }
     if (conversationStatus === ConversationStatus.CONNECTING) {
-      return { text: "Firing up it's diodes..." };
+      return { text: "Booting up Marvin..." };
     } else if (conversationStatus === ConversationStatus.ENDED) {
       return { text: "Thanks for chatting!" };
     } else if (conversationStatus === ConversationStatus.DISRUPTED) {
       return {
-        text: "Something is off. Is your internet connection okay?",
+        text: "Something is off. Is your internet connection working fine?",
         variant: "critical",
       };
     }
@@ -181,15 +157,11 @@ const Marvin: React.FC = () => {
       <Box flex={1} width={"100%"} height="100%">
         <Box flex={1} justifyContent="center" alignItems="center" pb="xl">
           <Pressable onPress={startNewConversation}>
-            <Face status={conversationStatus} />
+            <Face status={conversationStatus} mode={"speaking"} />
           </Pressable>
         </Box>
 
-        <Footer
-          primaryCta={primaryCta}
-          secondaryCta={secondaryCta}
-          message={footerMessage}
-        />
+        <Footer primaryCta={primaryCta} message={footerMessage} />
       </Box>
 
       <SafeBottomSpace />

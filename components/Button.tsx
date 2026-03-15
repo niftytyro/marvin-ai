@@ -51,7 +51,7 @@ const Button: React.FC<ButtonProps> = ({
           height={48}
           px="m"
           backgroundColor={bgColor}
-          borderRadius={8}
+          borderRadius={"large"}
           justifyContent="center"
           alignItems="center"
         >

@@ -53,6 +53,10 @@ const theme = createTheme({
       // We can define a default text variant here.
     },
   },
+  borderRadii: {
+    large: 8,
+    round: 999,
+  },
 });
 
 export type Theme = typeof theme;

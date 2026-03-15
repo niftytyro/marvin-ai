@@ -73,7 +73,8 @@ const Face: React.FC<FaceProps> = ({ status }) => {
         }}
       />
 
-      {status !== ConversationStatus.CONNECTED ? (
+      {status !== ConversationStatus.CONNECTED &&
+      status !== ConversationStatus.UNINITIALIZED ? (
         <Animated.View
           key="overlay"
           entering={FadeIn.duration(100).delay(200)}

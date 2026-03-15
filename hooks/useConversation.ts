@@ -3,7 +3,10 @@ import {
   useConversation as _useConversation,
   Role,
 } from "@elevenlabs/react-native";
+import { useAudioPlayer } from "expo-audio";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+const audioSource = require("@/assets/sounds/toggle.wav");
 
 // TODO find a nicer way to do this state management
 const getNewStatus = (
@@ -32,6 +35,8 @@ const getNewStatus = (
 };
 
 const useConversation = () => {
+  const player = useAudioPlayer(audioSource);
+
   const [conversationStatus, setConversationStatus] =
     useState<ConversationStatus>(ConversationStatus.UNINITIALIZED);
   const transcriptRef = useRef<string[]>([]);
@@ -59,6 +64,8 @@ const useConversation = () => {
     onMessage,
     onStatusChange: (prop) =>
       setConversationStatus(getNewStatus(prop.status, conversationStatus)),
+    // TODO check what kinds of errors these are
+    onError: (error) => setConversationStatus(ConversationStatus.DISRUPTED),
   });
 
   const startNewConversation = useCallback(async () => {
@@ -110,6 +117,17 @@ const useConversation = () => {
       endConversation();
     }
   }, [endConversation, emptyReplyCounter]);
+
+  useEffect(() => {
+    if (
+      conversationStatus === ConversationStatus.CONNECTING ||
+      conversationStatus === ConversationStatus.DISRUPTED ||
+      conversationStatus === ConversationStatus.ENDED ||
+      conversationStatus === ConversationStatus.PAUSED
+    ) {
+      player.play();
+    }
+  }, [conversationStatus, player]);
 
   return {
     mute,

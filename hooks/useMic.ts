@@ -6,16 +6,6 @@ import {
   setAudioModeAsync,
 } from "expo-audio";
 
-const setAudioMode = async () => {
-  // Configure audio for background playback with mixing
-  await setAudioModeAsync({
-    playsInSilentMode: true,
-    shouldPlayInBackground: true,
-    interruptionMode: "duckOthers",
-    allowsRecording: true,
-  });
-};
-
 const useMic = () => {
   const [permissionStatus, setPermissionStatus] = useState<
     PermissionStatus | undefined
@@ -42,18 +32,39 @@ const useMic = () => {
     }
   }, []);
 
+  const disableBackgroundAudio = useCallback(async () => {
+    await setAudioModeAsync({
+      playsInSilentMode: false,
+      shouldPlayInBackground: false,
+      interruptionMode: "mixWithOthers",
+      allowsRecording: false,
+    });
+  }, []);
+
+  const enableBackgroundAudio = useCallback(async () => {
+    await setAudioModeAsync({
+      playsInSilentMode: false,
+      shouldPlayInBackground: false,
+      interruptionMode: "mixWithOthers",
+      allowsRecording: false,
+    });
+  }, []);
+
   useEffect(() => {
     requestMicPermission();
   }, [requestMicPermission]);
 
   useEffect(() => {
-    setAudioMode();
-    console.log(
-      "We set the audio mode for background playback and mixing with other apps."
-    );
-  }, []);
+    enableBackgroundAudio();
+  }, [enableBackgroundAudio]);
 
-  return { permissionStatus, canAskAgain, requestMicPermission };
+  return {
+    permissionStatus,
+    canAskAgain,
+    requestMicPermission,
+    enableBackgroundAudio,
+    disableBackgroundAudio,
+  };
 };
 
 export default useMic;

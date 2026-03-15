@@ -21,8 +21,14 @@ class AudioInterruptionModule : Module() {
       focusListener = OnAudioFocusChangeListener { focusChange ->
         when (focusChange) {
           AudioManager.AUDIOFOCUS_LOSS,
-          AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> sendEvent("onInterruptionBegan", mapOf<String, Any>())
-          AudioManager.AUDIOFOCUS_GAIN -> sendEvent("onInterruptionEnded", mapOf<String, Any>())
+          AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
+            // Abandon focus so other apps can play
+            audioManager?.abandonAudioFocus(focusListener)
+            sendEvent("onInterruptionBegan", mapOf<String, Any>())
+          }
+          AudioManager.AUDIOFOCUS_GAIN -> {
+            sendEvent("onInterruptionEnded", mapOf<String, Any>())
+          }
         }
       }
     }

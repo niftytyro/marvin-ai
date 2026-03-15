@@ -74,6 +74,8 @@ const useConversation = () => {
       conversation.status === "disconnecting"
     ) {
       try {
+        console.log("New conversation starting...");
+        player.play();
         await conversation.startSession({
           agentId: "agent_3701kkrs7gmqf19r95z10x7efksx",
         });
@@ -81,30 +83,38 @@ const useConversation = () => {
         setConversationStatus(ConversationStatus.DISRUPTED);
       }
     }
-  }, [conversation]);
+  }, [conversation, player]);
 
   const endConversation = useCallback(async () => {
     setConversationStatus(ConversationStatus.ENDING);
     // TODO solve for sync updates
     setTimeout(async () => {
+      player.play();
       await conversation.endSession();
     });
-  }, [conversation]);
+  }, [conversation, player]);
 
-  const pauseConversation = useCallback(async () => {
-    setConversationStatus(ConversationStatus.PAUSING);
-    // TODO solve for sync updates
-    setTimeout(async () => {
-      await conversation.endSession();
-    });
-  }, [conversation]);
+  const pauseConversation = useCallback(
+    async (playAudio: boolean = true) => {
+      setConversationStatus(ConversationStatus.PAUSING);
+      // TODO solve for sync updates
+      setTimeout(async () => {
+        if (playAudio) {
+          player.play();
+        }
+        await conversation.endSession();
+      });
+    },
+    [conversation, player]
+  );
 
   const resumeConversation = useCallback(async () => {
+    player.play();
     await startNewConversation();
     conversation.sendContextualUpdate(
       `Previous conversation context: ${transcriptRef.current.join("\n")}`
     );
-  }, [startNewConversation, conversation]);
+  }, [startNewConversation, conversation, player]);
 
   const mute = useCallback(() => {
     conversation.setMicMuted(true);
@@ -119,17 +129,6 @@ const useConversation = () => {
       endConversation();
     }
   }, [endConversation, emptyReplyCounter]);
-
-  useEffect(() => {
-    if (
-      conversationStatus === ConversationStatus.CONNECTING ||
-      conversationStatus === ConversationStatus.DISRUPTED ||
-      conversationStatus === ConversationStatus.ENDED ||
-      conversationStatus === ConversationStatus.PAUSED
-    ) {
-      player.play();
-    }
-  }, [conversationStatus, player]);
 
   return {
     mute,

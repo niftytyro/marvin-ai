@@ -14,7 +14,13 @@ import {
 } from "@/modules/audio-interruption/src/AudioInterruptionModule";
 
 const Marvin: React.FC = () => {
-  const { permissionStatus, canAskAgain, requestMicPermission } = useMic();
+  const {
+    disableBackgroundAudio,
+    enableBackgroundAudio,
+    permissionStatus,
+    canAskAgain,
+    requestMicPermission,
+  } = useMic();
   const {
     conversationStatus,
     endConversation,
@@ -23,7 +29,6 @@ const Marvin: React.FC = () => {
     startNewConversation,
   } = useConversation();
   const { isInternetReachable } = useNetworkState();
-  const isAudioInterrupted = useRef(false);
 
   const primaryCta: ButtonProps | undefined = useMemo(() => {
     if (permissionStatus !== "granted") {
@@ -127,28 +132,25 @@ const Marvin: React.FC = () => {
   }, [conversationStatus, isInternetReachable, permissionStatus]);
 
   useEffect(() => {
-    AppState.addEventListener("change", (state) => {
-      if (
-        state === "active" &&
-        conversationStatus === ConversationStatus.PAUSED &&
-        !isAudioInterrupted.current
-      ) {
-        resumeConversation();
-      }
-    });
     const beganSub = addInterruptionBeganListener(() => {
-      pauseConversation();
-      isAudioInterrupted.current = true;
+      disableBackgroundAudio();
+      pauseConversation(false);
     });
-    const endedSub = addInterruptionEndedListener(
-      () => (isAudioInterrupted.current = true)
-    );
+    const endSub = addInterruptionEndedListener(() => {
+      enableBackgroundAudio();
+    });
 
     return () => {
       beganSub.remove();
-      endedSub.remove();
+      endSub.remove();
     };
-  }, [conversationStatus, pauseConversation, resumeConversation]);
+  }, [
+    conversationStatus,
+    pauseConversation,
+    resumeConversation,
+    disableBackgroundAudio,
+    enableBackgroundAudio,
+  ]);
 
   useEffect(() => {
     let timeout: number | undefined;

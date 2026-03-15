@@ -17,7 +17,9 @@ This is Marvin, from Hitchhiker's Guide to the Galaxy. It's an AI bot built with
 - [ ] Sound effect for disruptions
 - [x] Avatar
 - [ ] Handle soft diruptions - e.g. user backgrounds app manually, should not pause the conversation
+- [ ] TODOs
 - [ ] Model polish
+- [ ] Testflight/apk
 
 ## Potential Improvements
 

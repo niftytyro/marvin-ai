@@ -44,15 +44,19 @@ const Marvin: React.FC = () => {
     if (conversationStatus === ConversationStatus.ENDED) {
       return {
         label: "Start new chat",
-        state: "enabled",
         onPress: startNewConversation,
       };
     } else if (
       conversationStatus === ConversationStatus.PAUSED ||
-      conversationStatus === ConversationStatus.DISRUPTED
+      conversationStatus === ConversationStatus.DISRUPTED ||
+      conversationStatus === ConversationStatus.RECONNECTING
     ) {
       return {
         label: "Reconnect",
+        state:
+          conversationStatus === ConversationStatus.RECONNECTING
+            ? "loading"
+            : "enabled",
         onPress: resumeConversation,
       };
     } else if (

@@ -1,6 +1,7 @@
 import { ConversationStatus, ElevenLabsStatus } from "@/utils/types";
 import {
   useConversation as _useConversation,
+  Mode,
   Role,
 } from "@elevenlabs/react-native";
 import { useAudioPlayer } from "expo-audio";
@@ -17,6 +18,9 @@ const getNewStatus = (
     case "connected":
       return ConversationStatus.CONNECTED;
     case "connecting":
+      if (oldStatus === ConversationStatus.PAUSED) {
+        return ConversationStatus.RECONNECTING;
+      }
       return ConversationStatus.CONNECTING;
     default:
       if (
@@ -39,6 +43,7 @@ const useConversation = () => {
 
   const [conversationStatus, setConversationStatus] =
     useState<ConversationStatus>(ConversationStatus.UNINITIALIZED);
+  const [agentMode, setAgentMode] = useState<Mode | undefined>();
   const transcriptRef = useRef<string[]>([]);
   const [emptyReplyCounter, setEmptyReplyCounter] = useState(0);
 
@@ -66,6 +71,7 @@ const useConversation = () => {
       setConversationStatus(getNewStatus(prop.status, conversationStatus)),
     // TODO check what kinds of errors these are
     onError: (error) => setConversationStatus(ConversationStatus.DISRUPTED),
+    onModeChange: ({ mode }) => setAgentMode(mode),
   });
 
   const startNewConversation = useCallback(async () => {
@@ -138,6 +144,7 @@ const useConversation = () => {
     endConversation,
     pauseConversation,
     resumeConversation,
+    agentMode,
   };
 };
 

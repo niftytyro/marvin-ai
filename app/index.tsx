@@ -1,68 +1,13 @@
-import { Box, Text } from "@/components/foundation";
-import { Theme } from "@/components/theme";
-import { useTheme } from "@shopify/restyle";
-import { router } from "expo-router";
-import React, { useEffect } from "react";
-import { StyleSheet } from "react-native";
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withDelay,
-  withTiming,
-} from "react-native-reanimated";
+import { ElevenLabsProvider } from "@elevenlabs/react-native";
+import Marvin from "@/components/Marvin";
+import Story from "@/components/Story";
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});
-
-const Splash = () => {
-  const { colors } = useTheme<Theme>();
-  const opacityTweener = useSharedValue(0);
-  const positionTweener = useSharedValue(0);
-
-  useEffect(() => {
-    opacityTweener.value = withDelay(
-      500,
-      withTiming(1, {
-        duration: 800,
-        easing: Easing.bezierFn(0.82, 0.11, 0.53, 0.96),
-      })
-    );
-
-    positionTweener.value = withDelay(
-      500,
-      withTiming(1, {
-        duration: 800,
-      })
-    );
-
-    const timer = setTimeout(() => {
-      router.replace("/conversation");
-    }, 1800);
-
-    return () => clearTimeout(timer);
-  }, [positionTweener, opacityTweener]);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    backgroundColor: colors.white,
-    opacity: opacityTweener.value,
-    transform: [{ translateY: (1 - positionTweener.value) * 10 }],
-  }));
-
+export default function Index() {
   return (
-    <Animated.View style={[styles.container, animatedStyle]}>
-      <Box>
-        <Text variant="hero" color="black100" fontFamily="Libre Baskerville">
-          {"Don't\nPanic"}
-        </Text>
-      </Box>
-    </Animated.View>
+    <ElevenLabsProvider>
+      <Story>
+        <Marvin />
+      </Story>
+    </ElevenLabsProvider>
   );
-};
-
-export default Splash;
+}

@@ -134,9 +134,7 @@ const Marvin: React.FC = () => {
   };
 
   const getMessage = () => {
-    if (conversationStatus === ConversationStatus.UNINITIALIZED) {
-      return "This is Marvin - a manically depressed robot. Tap and say hi... but don't talk to him about life.";
-    } else if (conversationStatus === ConversationStatus.CONNECTING) {
+    if (conversationStatus === ConversationStatus.CONNECTING) {
       return "Firing up it's diodes...";
     } else if (conversationStatus === ConversationStatus.ENDED) {
       return "Thanks for chatting!";

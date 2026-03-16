@@ -71,17 +71,24 @@ const Face: React.FC<FaceProps> = ({ status, mode = "thinking" }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       console.log("Starting tweener animation", 1 + (Math.random() % 0.2));
-      const factor = mode === "thinking" ? 0.2 : 0.4;
+      const factor =
+        status === ConversationStatus.ENDED ||
+        status === ConversationStatus.PAUSED ||
+        status === ConversationStatus.DISRUPTED
+          ? 0
+          : mode === "thinking"
+          ? Math.random() % 0.2
+          : Math.random() % 0.4;
       const duration = mode === "speaking" ? 800 : 1000;
 
-      tweener.value = withTiming(1 + (Math.random() % factor), {
+      tweener.value = withTiming(1 + factor, {
         duration,
         easing: Easing.linear,
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [tweener, mode]);
+  }, [tweener, mode, status]);
 
   return (
     <Animated.View style={containerStyle}>

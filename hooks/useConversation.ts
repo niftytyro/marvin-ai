@@ -83,7 +83,7 @@ const useConversation = () => {
         console.log("New conversation starting...");
         player.play();
         await conversation.startSession({
-          agentId: "agent_3701kkrs7gmqf19r95z10x7efksx",
+          agentId: "agent_6401kkt753xhfevbx0j9arfv90w1",
         });
       } catch {
         setConversationStatus(ConversationStatus.DISRUPTED);

@@ -66,3 +66,20 @@ The design of the app is simple. It uses ElevenLabs for the AI agent and React N
 There are 2 kinds of interruptions: soft interruptions and hard interruptions. Soft interruptions are when the conversation can continue normally, while hard interruptions are when the conversation cannot continue anymore. In case of a soft interruption, the conversation need not be paused, while in case of a hard interruption, the conversation should be paused. The app also handles prolonged silence by pausing the conversation automatically.
 Examples of soft interruptions - user backgrounds the app manually or user locks the phone. 
 Examples of hard interruptions - user receives a phone call, music plays from other apps, internet connection is lost etc.
+
+
+### Negative Cases
+
+What can go wrong? Things can go wrong in 5 ways:
+
+- Internet/Network error ✅
+
+- Permissions not granted ✅
+
+- Audio hardware issues - this needs to be handled by the agent itself
+
+- Interruptions ✅ (whatever I could think of)
+
+- System failure - if there is a delay in receiving audio/messages from ElevenLabs, we can probably do a visual enhancement that indicates deep thinking, if it goes for too long we can just say something is off, is your internet okay? Or contact support here.
+
+

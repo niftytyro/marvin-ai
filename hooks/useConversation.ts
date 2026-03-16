@@ -95,8 +95,8 @@ const useConversation = () => {
     setConversationStatus(ConversationStatus.ENDING);
     // TODO solve for sync updates
     setTimeout(async () => {
-      player.play();
       await conversation.endSession();
+      player.play();
     });
   }, [conversation, player]);
 
@@ -105,10 +105,10 @@ const useConversation = () => {
       setConversationStatus(ConversationStatus.PAUSING);
       // TODO solve for sync updates
       setTimeout(async () => {
+        await conversation.endSession();
         if (playAudio) {
           player.play();
         }
-        await conversation.endSession();
       });
     },
     [conversation, player]

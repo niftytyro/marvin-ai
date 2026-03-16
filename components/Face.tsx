@@ -70,7 +70,6 @@ const Face: React.FC<FaceProps> = ({ status, mode = "thinking" }) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log("Starting tweener animation", 1 + (Math.random() % 0.2));
       const factor =
         status === ConversationStatus.ENDED ||
         status === ConversationStatus.PAUSED ||

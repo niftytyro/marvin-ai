@@ -1,5 +1,5 @@
 import useMic from "@/hooks/useMic";
-import { AppState, Linking, Pressable } from "react-native";
+import { AppState, Linking, Platform, Pressable } from "react-native";
 import { ButtonProps } from "./Button";
 import { useEffect, useMemo, useRef } from "react";
 import useConversation from "@/hooks/useConversation";
@@ -42,9 +42,16 @@ const Marvin: React.FC = () => {
             },
       };
     }
-    if (conversationStatus === ConversationStatus.ENDED) {
+    if (
+      conversationStatus === ConversationStatus.ENDED ||
+      conversationStatus === ConversationStatus.CONNECTING
+    ) {
       return {
         label: "Start new chat",
+        status:
+          conversationStatus === ConversationStatus.CONNECTING
+            ? "loading"
+            : "enabled",
         onPress: startNewConversation,
       };
     } else if (
@@ -62,16 +69,13 @@ const Marvin: React.FC = () => {
       };
     } else if (
       conversationStatus === ConversationStatus.PAUSING ||
-      conversationStatus === ConversationStatus.CONNECTED ||
-      conversationStatus === ConversationStatus.CONNECTING
+      conversationStatus === ConversationStatus.CONNECTED
     ) {
       return {
         label: "Pause chat",
         state:
           conversationStatus === ConversationStatus.PAUSING
             ? "loading"
-            : conversationStatus === ConversationStatus.CONNECTING
-            ? "disabled"
             : "enabled",
         onPress: pauseConversation,
       };
@@ -112,18 +116,26 @@ const Marvin: React.FC = () => {
   }, [conversationStatus, isInternetReachable, permissionStatus]);
 
   useEffect(() => {
-    const beganSub = addInterruptionBeganListener(() => {
-      disableBackgroundAudio();
-      pauseConversation(false);
-    });
-    const endSub = addInterruptionEndedListener(() => {
-      enableBackgroundAudio();
-    });
+    // We pause the conversation upon audio interruption
+    // On iOS, this works fine but on Android, there is a bug wherein
+    // the app detects interruption from itself upon playing the initial sound but
+    // doesn't detect interruption from other apps
+    // TODO solve this bug
+    if (Platform.OS === "ios") {
+      const beganSub = addInterruptionBeganListener(() => {
+        console.log("Audio interruption began");
+        disableBackgroundAudio();
+        pauseConversation(false);
+      });
+      const endSub = addInterruptionEndedListener(() => {
+        enableBackgroundAudio();
+      });
 
-    return () => {
-      beganSub.remove();
-      endSub.remove();
-    };
+      return () => {
+        beganSub.remove();
+        endSub.remove();
+      };
+    }
   }, [
     conversationStatus,
     pauseConversation,

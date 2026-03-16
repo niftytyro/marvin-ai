@@ -73,13 +73,9 @@ Examples of hard interruptions - user receives a phone call, music plays from ot
 What can go wrong? Things can go wrong in 5 ways:
 
 - Internet/Network error ✅
-
 - Permissions not granted ✅
-
 - Audio hardware issues - this needs to be handled by the agent itself
-
 - Interruptions ✅ (whatever I could think of)
-
 - System failure - if there is a delay in receiving audio/messages from ElevenLabs, we can probably do a visual enhancement that indicates deep thinking, if it goes for too long we can just say something is off, is your internet okay? Or contact support here.
 
 

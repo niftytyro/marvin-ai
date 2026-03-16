@@ -48,6 +48,7 @@ There are some improvements that can be made to the app:
 - When app is in background, js code doesn't execute - prolonged silence will not pause the conversation and so on
 - Android doesn't pick up the right font - need to investigate and fix that
 - Audio focus interruption triggers on app launch
+- Handling errors which are currently unhandled 
 
 ## Design
 
